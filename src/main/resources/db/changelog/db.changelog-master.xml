@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="CREATE_ROLE_TABLE" author="gurbanov">
+        <createTable tableName="ROLE">
+            <column name="ID" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="PK_USER_ID" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <!--@formatter:off-->
+    <changeSet id="INSERT_DEFAULT_ROLES" author="gurbanov">
+        <sql>
+            INSERT INTO ROLE (ID, NAME)
+            VALUES (1, 'ROLE_ADMIN'),(2, 'ROLE_USER')
+        </sql>
+    </changeSet>
+    <!--@formatter:on-->
+    <changeSet id="INSERT_DEFAULT_ADMIN" author="gurbanov">
+        <sql>
+            INSERT INTO USER_ENTITY (ID, USERNAME, PASSWORD, NAME, SURNAME, ROLE_ID)
+            VALUES (1, 'daria@gmail.com', '$2a$10$9P9ftwMSWPoUNQUc91A7Uufix9PiOvbK.ow4tEN9W91a0vBqILsze', 'Дарья', 'Балова', 1),
+                   (2, 'maria@gmail.com', '$2a$10$9P9ftwMSWPoUNQUc91A7Uufix9PiOvbK.ow4tEN9W91a0vBqILsze', 'Мария', 'Вершалова', 2);
+        </sql>
+    </changeSet>
+    <changeSet id="CREATE_USER_TABLE" author="gurbanov">
+        <createTable tableName="USER_ENTITY">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="USERNAME" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="PASSWORD" type="varchar(70)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SURNAME" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLE_ID" type="bigint">
+                <constraints references="ROLE(ID)" foreignKeyName="FK_ROLE_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="CREATE_USER_INFORMATION_TABLE" author="gurbanov">
+        <createTable tableName="USER_INFORMATION">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="ACCOUNT_IMAGE" type="blob">
+                <constraints nullable="true"/>
+            </column>
+            <column name="AGE" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GENRE" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PHONE_NUMBER" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="bigint">
+                <constraints references="USER_ENTITY(ID)" foreignKeyName="FK_USER_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="CREATE_RETIREMENT_TABLE" author="gurbanov">
+        <createTable tableName="RETIREMENT">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="RETIREMENT_DATE" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="REASON" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="THE_ESTABLISHED_PENSION" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="bigint">
+                <constraints references="USER_ENTITY(ID)" foreignKeyName="RETIREMENT_USER_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="CREATE_ACCOUNTING_FOR_PAYMENTS_TABLE" author="gurbanov">
+        <createTable tableName="ACCOUNTING_FOR_PAYMENTS">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="PAYMENT_DATE" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="SALARY" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="bigint">
+                <constraints references="USER_ENTITY(ID)" foreignKeyName="ACCOUNTING_FOR_PAYMENTS_USER_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="CREATE_ADDRESS_TABLE" author="gurbanov">
+        <createTable tableName="ADDRESS">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="CITY" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DISTRICT" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STREET" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HOUSE" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="APARTMENT" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="USER_ID" type="bigint">
+                <constraints references="USER_ENTITY(ID)" foreignKeyName="ADDRESS_USER_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="CREATE_WORK_TABLE" author="gurbanov">
+        <createTable tableName="WORK">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME_OF_WORK" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="POSITION" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DID_WORK_FROM" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DID_WORK_TO" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAKE_SALARY" type="float">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="USER_ID" type="bigint">
+                <constraints references="USER_ENTITY(ID)" foreignKeyName="WORK_USER_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
